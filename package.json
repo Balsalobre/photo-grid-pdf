@@ -1,0 +1,40 @@
+{
+  "name": "photo-grid-pdf",
+  "version": "1.0.0",
+  "description": "API para generar PDFs con cuadrícula de fotos carnet",
+  "main": "src/main.ts",
+  "scripts": {
+    "dev": "bun --watch src/main.ts",
+    "start": "bun src/main.ts",
+    "build": "bun build src/main.ts --outdir ./dist --target bun",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "pdf",
+    "image",
+    "grid",
+    "typescript",
+    "bun"
+  ],
+  "author": "Balsalobre",
+  "license": "MIT",
+  "module": "main.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/multer": "^2.0.0",
+    "@types/pdfkit": "^0.17.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "multer": "^2.0.2",
+    "pdfkit": "^0.17.2",
+    "sharp": "^0.34.3"
+  }
+}
