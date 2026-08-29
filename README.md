@@ -1,99 +1,120 @@
 # 📸 photo-grid-pdf
 
-Servicio ligero en Bun + Express para generar un PDF A4 apaisado con una cuadrícula repetida de la misma foto (por defecto 11 columnas × 6 filas) y márgenes de 1 cm.
+<div align="center">
 
-## ✨ Características
-- 🧩 Cuadrícula configurable (`columns`, `rows`)
-- 🖼️ Mantiene proporción de la imagen centrada en cada celda
-- 📄 Salida en A4 horizontal (297 × 210 mm) con margen uniforme de 10 mm
-- 🚀 Rápido (usa `sharp` + `pdfkit` en memoria)
-- 🛡️ Límite de tamaño: 15 MB
-- 🎯 Conversión interna a JPEG (92% calidad, 4:4:4) para estandarizar
+![Bun](https://img.shields.io/badge/Bun-000000?style=for-the-badge&logo=bun&logoColor=white)
+![Express](https://img.shields.io/badge/Express-5-000000?style=for-the-badge&logo=express&logoColor=white)
+![sharp](https://img.shields.io/badge/sharp-99CC00?style=for-the-badge&logo=sharp&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-3DA639?style=for-the-badge&logo=creativecommons&logoColor=white)
 
-## 🛠️ Requisitos
-- [Bun](https://bun.sh) instalado
-- (Opcional) `PORT` para cambiar el puerto (por defecto `3000`)
+**A lightweight Bun + Express service that generates an A4 landscape PDF with a repeated grid of the same photo (default 11 columns × 6 rows) and 1 cm margins.**
 
-## 📦 Instalación
+[Features](#-features) •
+[Endpoints](#-endpoints) •
+[Quick start](#-quick-start)
+
+</div>
+
+---
+
+## ✨ Features
+
+- 🧩 Configurable grid (`columns`, `rows`)
+- 🖼️ Preserves aspect ratio, image centered in each cell
+- 📄 A4 landscape output (297 × 210 mm) with a uniform 10 mm margin
+- 🚀 Fast — `sharp` + `pdfkit` fully in memory
+- 🛡️ Size limit: 15 MB
+- 🎯 Internal conversion to JPEG (92% quality, 4:4:4) for standardization
+
+---
+
+## 🛠️ Requirements
+
+- [Bun](https://bun.sh) installed
+- (Optional) `PORT` environment variable (default `3000`)
+
+## 📦 Quick Start
 
 ```bash
 bun install
+bun run dev        # development
+bun start          # production / direct run
 ```
 
-## 🧪 Desarrollo
+Server listens by default at `http://localhost:3000`.
 
-```bash
-bun run dev
-```
-
-## ▶️ Producción / ejecución directa
-
-```bash
-bun start
-```
-
-Servidor escuchando por defecto en: `http://localhost:3000`.
+---
 
 ## 🌐 Endpoints
 
 ### ✅ Healthcheck
-GET `/health`
 
-Respuesta:
+`GET /health`
+
 ```json
 { "status": "ok" }
 ```
 
-### 🧾 Generar PDF
-POST `/generate` (`multipart/form-data`)
+### 🧾 Generate PDF
 
-Campos del formulario:
-- `photo` (requerido): archivo de imagen (JPG, PNG, WEBP, etc.)
-- `columns` (opcional, entero > 0) – por defecto `11`
-- `rows` (opcional, entero > 0) – por defecto `6`
+`POST /generate` (`multipart/form-data`)
 
-Características del PDF generado:
-- Tamaño: A4 horizontal (297 mm × 210 mm)
-- Márgenes: 10 mm en los cuatro lados
-- Disposición: cuadrícula `columns × rows`
-- Escalado: mantiene proporción de la imagen, centrada en cada celda (letterboxing dentro del espacio disponible si la proporción no coincide)
+Form fields:
+- `photo` (required): image file (JPG, PNG, WEBP, etc.)
+- `columns` (optional, int > 0) — default `11`
+- `rows` (optional, int > 0) — default `6`
 
-#### 📌 Ejemplo con curl
+Generated PDF properties:
+- Size: A4 landscape (297 mm × 210 mm)
+- Margins: 10 mm on all four sides
+- Layout: `columns × rows` grid
+- Scaling: aspect ratio preserved, centered in each cell (letterboxed within the available space when ratios differ)
+
+#### 📌 curl example
+
 ```bash
 curl -X POST http://localhost:3000/generate \
-	-F "photo=@/ruta/a/foto.jpg" \
+	-F "photo=@/path/to/photo.jpg" \
 	-F "columns=11" \
 	-F "rows=6" \
 	--output grid.pdf
 ```
 
-#### Respuestas de error habituales
+#### Common error responses
+
 ```jsonc
-// Falta archivo
+// Missing file
 { "error": "Falta el archivo \"photo\"" }
 
-// Error interno genérico
-{ "error": "Error interno", "details": "<mensaje>" }
+// Generic internal error
+{ "error": "Error interno", "details": "<message>" }
 ```
 
-## 🧾 Parámetros y límites
-| Parámetro | Tipo | Default | Descripción |
+---
+
+## 🧾 Parameters & Limits
+
+| Parameter | Type | Default | Description |
 |----------|------|---------|-------------|
-| `photo`  | file | (requerido) | Imagen fuente |
-| `columns`| int  | 11 | Número de columnas (>0) |
-| `rows`   | int  | 6  | Número de filas (>0) |
-| Tamaño máx. archivo | — | 15 MB | Rechazado si excede |
+| `photo`  | file | (required) | Source image |
+| `columns`| int  | 11 | Number of columns (>0) |
+| `rows`   | int  | 6  | Number of rows (>0) |
+| Max file size | — | 15 MB | Rejected if exceeded |
 
-## 🧠 Notas técnicas
-- Conversión previa a JPEG estandariza compresión y evita inconsistencias de color.
-- Todo se procesa en memoria (no se escribe a disco).
-- El PDF se envía con `Content-Disposition: inline` (puedes forzar descarga con herramientas externas).
+---
 
-## 🧭 Estructura del proyecto (resumen)
+## 🧠 Technical Notes
+
+- Pre-conversion to JPEG standardizes compression and avoids color inconsistencies
+- Everything is processed in memory (nothing written to disk)
+- The PDF is sent with `Content-Disposition: inline` (force download with external tooling if needed)
+
+## 🧭 Project Structure
+
 ```
 src/
-	main.ts           # Arranque (lee PORT)
-	server.ts         # Config Express + health + rutas + error handler
+	main.ts           # Bootstrap (reads PORT)
+	server.ts         # Express config + health + routes + error handler
 	routes/photoGridRoutes.ts
 	services/pdfGridService.ts
 	middleware/{upload,errorHandler}.ts
@@ -101,20 +122,32 @@ src/
 	utils/units.ts
 ```
 
-## 🧪 Comandos útiles
+## 🧪 Useful Commands
+
 ```bash
-bun run type-check   # Verificar tipos
-bun run build        # (Opcional) construir a dist
+bun run type-check   # Type checking
+bun run build        # (Optional) build to dist
 ```
 
-## 🚧 Futuras mejoras sugeridas
-- Validar / forzar proporciones (ej. 35×45 mm) y recorte opcional
-- Soporte para múltiples imágenes distintas por celda
-- Paginación automática si las celdas exceden una página
-- Endpoint para devolver metadata (dimensiones de celdas en mm / pt)
+---
 
-## 📄 Licencia
-MIT
+## 🚧 Suggested Future Improvements
+
+- Validate / force cell proportions (e.g. 35×45 mm passport size) with optional cropping
+- Support multiple distinct images per cell
+- Automatic pagination when cells exceed one page
+- Metadata endpoint (cell dimensions in mm / pt)
 
 ---
-Hecho con ❤️ usando Bun, Express, sharp y pdfkit.
+
+## 📄 License
+
+MIT — see [`LICENSE`](LICENSE).
+
+---
+
+<div align="center">
+
+Made with ❤️ using Bun, Express, sharp and pdfkit.
+
+</div>
